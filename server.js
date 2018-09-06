@@ -1,7 +1,7 @@
 import createServer, { Network } from 'monsterr'
-import stage1 from './src/stages/stage1/server'
+import gamestage from './src/stages/tic-tac-toe/server/server'
 
-const stages = [stage1]
+const stages = [gamestage]
 
 let events = {}
 let commands = {}

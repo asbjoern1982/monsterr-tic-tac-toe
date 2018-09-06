@@ -1,8 +1,8 @@
 /* globals $ */
 import createClient from 'monsterr'
 
-import html from './src/admin-client.html'
-import './src/admin-client.css'
+import html from './src/admin/admin-client.html'
+import './src/admin/admin-client.css'
 
 let options = {
   canvasBackgroundColor: 'red',

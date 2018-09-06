@@ -1,9 +1,7 @@
 import createClient from 'monsterr'
-import stage1 from './src/stages/stage1/client'
+import gamestage from './src/stages/tic-tac-toe/client/client'
 
-const stages = [
-  stage1
-]
+const stages = [gamestage]
 
 let options = {
   canvasBackgroundColor: 'blue',
