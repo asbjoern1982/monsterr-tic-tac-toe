@@ -1,19 +1,8 @@
-/* globals fabric */
-
-/**
- * This represents the client side of stage 1.
- * 
- * The
- *  - commands,
- *  - events,
- *  - and html
- * you define here will only be valid for the duration of the stage.
- */
-
-// You can import html and css from anywhere.
-import html from './stage1.html'
-// css is immediately applied on import.
-import './stage1.css'
+import html from './client.html'
+import './client.css'
+import {board} from '../model/board'
+import {view} from './view'
+let boardSize = 200 // TODO set boardsize
 
 // Export the complete stage as the default export
 export default {
@@ -30,35 +19,30 @@ export default {
   },
 
   // Optionally define events
-  events: {},
+  events: {
+    'youAre': (client, piece) => {
+      client.getChat().append('You are ' + piece)
+    },
+    'gameover': (client, msg) => {
 
-  // Optionally define a setup method that is run before stage begins
+    },
+    'move': (client, move) => {
+      board.move(move.piece, move.position)
+      view.draw(client.getCanvas(), board.getBoard(), boardSize)
+    }
+  },
+
   setup: (client) => {
-    // You can prepare the canvas...
-    client.getCanvas().add(...['green', 'red', 'yello'].map(fill => new fabric.Triangle({
-      width: 50, height: 50, fill, left: Math.random() * 200, top: Math.random() * 500
-    })))
-
-    // and access html...
-    // Here we listen for button clicks.
-    $('#stage1-button').mouseup(e => {
-      e.preventDefault() // Stop button from default behaviour (You almost always want to do this).
-      $('#stage1-title').html($('#stage1-input').val()) // Set title's content to value of input.
+    client.getCanvas().on('mouse:down', (event) => {
+      let position = view.getIndex({x: event.e.clientX, y: event.e.clientY})
+      if (position > -1) {
+        client.send('move', position)
+      }
     })
-  },
-  
-  // Optionally define a teardown method that is run when stage finishes
-  teardown (client) {
-    $('#stage1-button').off() // Remove all event handlers from button
-  },
 
+    view.draw(client.getCanvas(), board.getBoard(), boardSize)
+    client.send('clientReady')
+  },
   // Configure options
-  options: {
-    // You can set duration if you want the stage to
-    // be timed on the client.
-    duration: 30000,
-    // You can set how much space you want the html
-    // to take up. 0 = none. 1 = all.
-    htmlContainerHeight: 0.3
-  }
+  options: {}
 }

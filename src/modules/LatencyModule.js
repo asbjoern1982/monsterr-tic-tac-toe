@@ -7,7 +7,7 @@ import Chart from 'chart.js'
  *    a) in the top: import {LatencyModule} from './src/modules/LatencyModule'
  *    b) between commands is declared and before the server is created: LatencyModule.addServerCommands(commands)
  * 3) for /admin-client.js add the following lines
- *    a) in the top: import {LatencyModule} from './src/modules/latencyModule'
+ *    a) in the top: import {LatencyModule} from './src/modules/LatencyModule'
  *    b) between events is declared and before the server is created: LatencyModule.addAdminClientEvents(events)
  *    c) after the admin-client is created: LatencyModule.setupClient(admin)
  */
