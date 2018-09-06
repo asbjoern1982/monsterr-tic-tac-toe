@@ -15,7 +15,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "monsterr": "^0.2.3"
+    "chart.js": "^2.7.2",
+    "monsterr": "^0.2.3",
+    "vis": "^4.21.0"
   },
   "devDependencies": {
     "babel-plugin-transform-html-import-to-string": "0.0.1",

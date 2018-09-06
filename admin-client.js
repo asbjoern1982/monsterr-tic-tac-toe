@@ -3,6 +3,8 @@ import createClient from 'monsterr'
 
 import html from './src/admin/admin-client.html'
 import './src/admin/admin-client.css'
+import {NetworkModule} from './src/modules/NetworkModule'
+import {LatencyModule} from './src/modules/LatencyModule'
 
 let options = {
   canvasBackgroundColor: 'red',
@@ -13,6 +15,8 @@ let options = {
 
 let events = {}
 let commands = {}
+NetworkModule.addAdminClientEvents(events)
+LatencyModule.addAdminClientEvents(events)
 
 const admin = createClient({
   events,
@@ -34,3 +38,6 @@ $('#admin-button-reset').mouseup(e => {
   e.preventDefault()
   admin.sendCommand('reset')
 })
+
+NetworkModule.setupClient(admin)
+LatencyModule.setupClient(admin)
