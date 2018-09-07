@@ -30,10 +30,6 @@ $('#admin-button-start').mouseup(e => {
   e.preventDefault()
   admin.sendCommand('start')
 })
-$('#admin-button-next').mouseup(e => {
-  e.preventDefault()
-  admin.sendCommand('next')
-})
 $('#admin-button-reset').mouseup(e => {
   e.preventDefault()
   admin.sendCommand('reset')

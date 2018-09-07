@@ -3,6 +3,7 @@ import './client.css'
 import {board} from '../model/board'
 import {view} from './view'
 let boardSize = 200 // TODO set boardsize
+let iAm
 
 // Export the complete stage as the default export
 export default {
@@ -21,10 +22,11 @@ export default {
   // Optionally define events
   events: {
     'youAre': (client, piece) => {
+      iAm = piece
       client.getChat().append('You are ' + piece)
     },
     'gameover': (client, msg) => {
-
+      client.getChat().append('GAMEOVER: ' + msg)
     },
     'move': (client, move) => {
       board.move(move.piece, move.position)
@@ -36,7 +38,9 @@ export default {
     client.getCanvas().on('mouse:down', (event) => {
       let position = view.getIndex({x: event.e.clientX, y: event.e.clientY})
       if (position > -1) {
-        client.send('move', position)
+        if (board.isMoveLegal(iAm, position)) {
+          client.send('move', position)
+        }
       }
     })
 

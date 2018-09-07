@@ -17,10 +17,12 @@ export default {
   events: {
     'move': (server, clientId, position) => {
       let piece = players[0] === clientId ? 'X' : 'O'
-      let move = board.move(piece, position)
-      if (move === 'won') server.send('gameover', piece + ' won').toAll()
-      if (move === 'draw') server.send('gameover', 'draw').toAll()
-      if (move === 'legal') server.send('move', {piece: piece, position: position}).toAll()
+      if (board.isMoveLegal(piece, position)) {
+        let gameover = board.move(piece, position)
+        server.send('move', {piece: piece, position: position}).toAll()
+        if (gameover === 'won') server.send('gameover', piece + ' won').toAll()
+        if (gameover === 'draw') server.send('gameover', 'draw').toAll()
+      }
       // do nothing if it is illigal
     },
     'clientReady': (server, clientId) => {

@@ -28,15 +28,14 @@ let createNetworkModule = () => {
   ]
 
   let networkgraph
+  let msgName = 'NetworkModuleUpdate'
 
   let addHTML = (admin) => {
     // inject the html in the page
     let htmlGraph = '<div class="col-sm" style="border: 1px solid lightgray; height: 300px; width: 300px;"><div id="networkgraphtitle">Network Graph</div><div id="networkgraph"></div></div>'
     if ($('#graphs').length) {
-      console.log('NetworkModule: #graphes exsist! appending!')
       $('#graphs').append(htmlGraph)
     } else {
-      console.log('NetworkModule: #graphes does not exsist! creating it!')
       $('#admin').append('<div class="container"><div class="row" id="graphs">' + htmlGraph + '</div></div>')
     }
   }
@@ -57,8 +56,8 @@ let createNetworkModule = () => {
 
   let createTimer = (admin) => {
     // update network graph
-    admin.sendCommand('networkOverview')
-    setInterval(() => admin.sendCommand('networkOverview'), 5000)
+    admin.sendCommand(msgName)
+    setInterval(() => admin.sendCommand(msgName), 5000)
   }
 
   let setupClient = (admin) => {
@@ -68,7 +67,7 @@ let createNetworkModule = () => {
   }
 
   let addAdminClientEvents = (events) => {
-    events['networkOverview'] = (admin, networkdata) => {
+    events[msgName] = (admin, networkdata) => {
       let nodes = networkdata[0]
       let edges = networkdata[1]
       networkgraph.setData({nodes: nodes, edges: edges})
@@ -76,7 +75,7 @@ let createNetworkModule = () => {
   }
 
   let addServerCommands = (commands, network) => {
-    commands['networkOverview'] = (server) => {
+    commands[msgName] = (server) => {
       let players = network.getPlayers()
       let nodes = []
       let colorCount = 0
@@ -105,7 +104,7 @@ let createNetworkModule = () => {
         }
       }
       let networkdata = [nodes, edges]
-      server.send('networkOverview', networkdata).toAdmin()
+      server.send(msgName, networkdata).toAdmin()
     }
   }
 

@@ -1,61 +1,63 @@
 function createBoard () {
   let boardState = [
-    -1, -1, -1,
-    -1, -1, -1,
-    -1, -1, -1
+    null, null, null,
+    null, null, null,
+    null, null, null
   ]
   let turnCount = 0
+  let gameover = false
 
-  // piece is 0 for X and 1 for O
   // position is from 0 to 8, 0-1-2 is first row, 3-4-5 is second row osv
-  // return if it was a legal move and if the game is over
   function move (piece, position) {
-    let pieceNo = piece === 'X' ? 0 : 1
-    if (turnCount % 2 === pieceNo && boardState[position] === -1) {
-      boardState[position] = pieceNo
-      turnCount++
+    boardState[position] = piece
+    turnCount++
 
-      if (winnerFound(pieceNo)) return 'won'
-      if (isDraw()) return 'draw'
-
-      return 'legal'
-    }
-    return 'illigal'
+    if (winnerFound(piece)) return 'won'
+    if (isDraw()) return 'draw'
   }
 
-  function winnerFound (pieceNo) {
-    // check horizontal
-    for (let y = 0; y < 3; y++) if (checkHorizontal(pieceNo, y)) return true
-    for (let x = 0; x < 3; x++) if (checkVertical(pieceNo, x)) return true
-    if (checkCrosses()) return true
+  function isMoveLegal (piece, position) {
+    let pieceNo = piece === 'X' ? 0 : 1
+    if (!gameover && turnCount % 2 === pieceNo && boardState[position] === null) {
+      return true
+    }
     return false
   }
 
-  function checkHorizontal (pieceNo, y) {
-    if (boardState[y * 3 + 0] !== pieceNo) return false
-    if (boardState[y * 3 + 1] !== pieceNo) return false
-    if (boardState[y * 3 + 2] !== pieceNo) return false
+  function winnerFound (piece) {
+    // check horizontal
+    for (let y = 0; y < 3; y++) if (checkHorizontal(piece, y)) gameover = true
+    for (let x = 0; x < 3; x++) if (checkVertical(piece, x)) gameover = true
+    if (checkCrosses()) gameover = true
+    return gameover
+  }
+
+  function checkHorizontal (piece, y) {
+    if (boardState[y * 3 + 0] !== piece) return false
+    if (boardState[y * 3 + 1] !== piece) return false
+    if (boardState[y * 3 + 2] !== piece) return false
     return true
   }
 
-  function checkVertical (pieceNo, x) {
-    if (boardState[x + 3 * 0] !== pieceNo) return false
-    if (boardState[x + 3 * 1] !== pieceNo) return false
-    if (boardState[x + 3 * 2] !== pieceNo) return false
+  function checkVertical (piece, x) {
+    if (boardState[x + 3 * 0] !== piece) return false
+    if (boardState[x + 3 * 1] !== piece) return false
+    if (boardState[x + 3 * 2] !== piece) return false
     return true
   }
 
-  function checkCrosses (pieceNo) {
-    if (boardState[4] !== pieceNo) return false
-    if (boardState[0] === pieceNo && boardState[8] === pieceNo) return true
-    if (boardState[2] === pieceNo && boardState[6] === pieceNo) return true
+  function checkCrosses (piece) {
+    if (boardState[4] !== piece) return false
+    if (boardState[0] === piece && boardState[8] === piece) return true
+    if (boardState[2] === piece && boardState[6] === piece) return true
     return false
   }
 
   function isDraw () {
     for (let t in boardState) {
-      if (boardState[t] === -1) return false
+      if (boardState[t] === null) return false
     }
+    gameover = true
     return true
   }
 
@@ -70,6 +72,7 @@ function createBoard () {
 
   return {
     move,
+    isMoveLegal,
     getBoard,
     setBoard
   }

@@ -2,8 +2,8 @@ export function createView () {
   let ts
   let padding
   function draw (canvas, board, boardSize) {
-    ts = boardSize / 3
     padding = boardSize / 12
+    ts = (boardSize - 2 * padding) / 3
     canvas.clear()
     canvas.backgroundColor = 'lightgrey'
 
@@ -24,13 +24,12 @@ export function createView () {
 
     for (let x = 0; x < 3; x++) {
       for (let y = 0; y < 3; y++) {
-        if (board[x * 3 + y] > -1) {
-          let peiceStr = board[x * 3 + y] ? 'O' : 'X'
-          let piece = new fabric.Text(peiceStr, {
+        if (board[x * 3 + y] !== null) {
+          let piece = new fabric.Text(board[x * 3 + y], {
             left: x * ts + padding + ts / 8,
             top: y * ts + padding,
             fontSize: ts,
-            hasControls: false
+            selectable: false
           })
           canvas.add(piece)
         }

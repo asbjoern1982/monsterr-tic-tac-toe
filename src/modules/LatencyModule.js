@@ -26,15 +26,14 @@ let createLatencyModule = () => {
     'rgb(255, 0, 255)'
   ]
   let chart
+  let msgName = 'LatencyModuleUpdate'
 
   let addHTML = (admin) => {
     // inject the html in the page
     let htmlGraph = '<div class="col-sm" style="border: 1px solid lightgray; height: 300px; width: 300px;"><div id="latencygraphtitle">Latency Graph</div><canvas id="latencygraph"></canvas></div>'
     if ($('#graphs').length) {
-      console.log('LatencyModule: #graphes exsist! appending!')
       $('#graphs').append(htmlGraph)
     } else {
-      console.log('LatencyModule: #graphes does not exsist! creating it!')
       $('#admin').append('<div class="container"><div class="row" id="graphs">' + htmlGraph + '</div></div>')
     }
   }
@@ -75,8 +74,8 @@ let createLatencyModule = () => {
   let createTimer = (admin) => {
     // start the listenerloop for updating the graph, note:  there is only
     // new data every 5 seconds, hench the slow timer
-    admin.sendCommand('latencyUpdate')
-    setInterval(() => admin.sendCommand('latencyUpdate'), 5000)
+    admin.sendCommand(msgName)
+    setInterval(() => admin.sendCommand(msgName), 5000)
   }
 
   let setupClient = (admin) => {
@@ -86,7 +85,7 @@ let createLatencyModule = () => {
   }
 
   let addAdminClientEvents = (events) => {
-    events['latencyUpdate'] = (admin, latencies) => {
+    events[msgName] = (admin, latencies) => {
       if (!chart) {
         console.log('chart not initialized, please run "setupClient(admin)" before running the adminClient')
         return
@@ -113,8 +112,8 @@ let createLatencyModule = () => {
   }
 
   let addServerCommands = (commands) => {
-    commands['latencyUpdate'] = (server) => {
-      server.send('latencyUpdate', server.getLatencies()).toAdmin()
+    commands[msgName] = (server) => {
+      server.send(msgName, server.getLatencies()).toAdmin()
     }
   }
 
