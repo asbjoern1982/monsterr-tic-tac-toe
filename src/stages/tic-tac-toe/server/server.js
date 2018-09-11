@@ -1,48 +1,87 @@
-import {board} from '../model/board'
+import createBoard from '../model/board'
 
-let players = []
+let players
+let bots = []
 let readyCount = 0
+let games
+
+// ============================================================================
+// Game-list
+// As we do not have direct control over the network, we create our own
+// structure for who gets to play a bot
+// ============================================================================
 
 // Export stage as the default export
 export default {
   // Optionally define commands
-  commands: {
-    'consede': (server, clientId) => {
-      let piece = players[0] === clientId ? 'X' : 'O'
-      server.send('gameover', piece + ' conseded')
-    }
-  },
+  commands: {},
 
   // Optionally define events
   events: {
     'move': (server, clientId, position) => {
-      // only one board is supported
-      let piece = players[0] === clientId ? 'X' : 'O'
-      if (board.isMoveLegal(piece, position)) {
-        let gameover = board.move(piece, position)
-        server.send('move', {piece: piece, position: position}).toAll()
-        if (gameover === 'won') server.send('gameover', piece + ' won').toAll()
-        if (gameover === 'draw') server.send('gameover', 'draw').toAll()
+      let game = games.filter(game => game.x === clientId || game.o === clientId)[0]
+      let piece = game.x === clientId ? 'X' : 'O'
+
+      if (game.board.isMoveLegal(piece, position)) {
+        let gameover = game.board.move(piece, position)
+        server.send('move', {piece: piece, position: position}).toClient(game.x)
+        server.send('move', {piece: piece, position: position}).toClient(game.o)
+
+        if (gameover === 'won') {
+          server.send('gameover', piece + ' won').toClient(game.x)
+          server.send('gameover', piece + ' won').toClient(game.o)
+        }
+        if (gameover === 'draw') {
+          server.send('gameover', 'draw').toClient(game.x)
+          server.send('gameover', 'draw').toClient(game.o)
+        }
       } else {
         console.log(clientId + ' tried to make an illigal move')
       }
-      // do nothing if it is illigal
     },
-    'clientReady': (server, clientId) => {
+    'clientReady': (server, clientId, type) => {
       readyCount++
-      if (readyCount > 2) {
-        console.log('At the moment, more than 2 players are not supported, readyCount=' + readyCount)
-      }
+      if (type === 'bot') bots.push(clientId)
+
       if (readyCount === players.length) {
-        // randomize color and tell each client what color their are
-        for (let i = 0; i < players.length / 2; i++) {
-          if (Math.random() < 0.5) {
-            let tempPlayer = players[i]
-            players[i] = players[i + 1]
-            players[i + 1] = tempPlayer
+        // setup game and add bots
+        let numberOfHumanPlayers = players.length - bots.length
+        let numberOfBots = bots.length
+
+        let numberOfGames = (numberOfHumanPlayers + numberOfBots) / 2
+        games = Array.from({length: numberOfGames}, () => { return {x: null, o: null, board: createBoard()} })
+
+        // add bots
+        for (let i = 0; i < numberOfBots; i++) {
+          let pos = Math.floor(games.length * Math.random())
+          while (games[pos].o !== null) {
+            pos = Math.floor(games.length * Math.random())
           }
-          server.send('youAre', 'X').toClient(players[i])
-          server.send('youAre', 'O').toClient(players[i + 1])
+          games[pos].o = bots[i]
+        }
+
+        // add clients
+        let shuffledHumanPlayers = players
+          .filter(player => !bots.includes(player))
+          .map((a) => ({sort: Math.random(), value: a}))
+          .sort((a, b) => a.sort - b.sort)
+          .map((a) => a.value)
+
+        let tempClientIndex = 0
+        for (let i = 0; i < games.length; i++) {
+          games[i].x = shuffledHumanPlayers[tempClientIndex++]
+          if (games[i].o === null) games[i].o = shuffledHumanPlayers[tempClientIndex++]
+        }
+
+        // randomize color and tell each player what theyt are
+        for (let i = 0; i < games.length; i++) {
+          if (Math.random() < 0.5) {
+            let tempX = games[i].x
+            games[i].x = games[i].o
+            games[i].o = tempX
+          }
+          server.send('youAre', 'X').toClient(games[i].x)
+          server.send('youAre', 'O').toClient(games[i].o)
         }
       }
     }
@@ -51,19 +90,16 @@ export default {
   // Optionally define a setup method that is run before stage begins
   setup: (server) => {
     console.log('PREPARING SERVER FOR STAGE', server.getCurrentStage())
-
     players = server.getPlayers()
-    if (players.length % 2 !== 0) {
-      console.log('not even amount of players! players.length=' + players.length)
-      // TODO revert the state
-    }
   },
 
   // Optionally define a teardown method that is run when stage finishes
   teardown: (server) => {
     console.log('CLEANUP SERVER AFTER STAGE', server.getCurrentStage())
-    board.resetBoard()
+    // TODO board.resetBoard()
+    for (let i in games) games[i].board.resetBoard()
     readyCount = 0
+    bots = []
   },
 
   // Configure options

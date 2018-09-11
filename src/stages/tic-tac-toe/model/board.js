@@ -1,4 +1,4 @@
-function createBoard () {
+export default function () {
   let boardState
   let turnCount
   let gameover
@@ -86,5 +86,3 @@ function createBoard () {
     setBoard
   }
 }
-
-export const board = createBoard()

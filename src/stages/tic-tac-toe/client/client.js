@@ -1,10 +1,11 @@
 import html from './client.html'
 import './client.css'
-import {board} from '../model/board'
+import createBoard from '../model/board'
 import {view} from './view'
 import {Events} from 'monsterr'
 let boardSize = 200 // TODO set boardsize
 let iAm
+let board
 
 // Export the complete stage as the default export
 export default {
@@ -48,9 +49,12 @@ export default {
         }
       }
     })
-
+    console.log('setting up board')
+    board = createBoard()
+    console.log('drawing it')
     view.draw(client.getCanvas(), board.getBoard(), boardSize)
-    client.send('clientReady')
+    console.log('reports ready to the server')
+    client.send('clientReady', 'client')
   },
   // Configure options
   options: {}

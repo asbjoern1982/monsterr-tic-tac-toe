@@ -20,7 +20,7 @@ function handleEvent (event) {
   console.log('event', event)
   if (event.type === '@monsterr/START_STAGE') { // setup
     // TODO init board
-    socket.emit('event', { type: 'clientReady', payload: undefined })
+    socket.emit('event', { type: 'clientReady', payload: 'bot' })
   } else if (event.type === 'youAre') {
     piece = event.payload
     if (piece === 'X') {
