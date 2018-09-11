@@ -2,6 +2,7 @@ import html from './client.html'
 import './client.css'
 import {board} from '../model/board'
 import {view} from './view'
+import {Events} from 'monsterr'
 let boardSize = 200 // TODO set boardsize
 let iAm
 
@@ -31,6 +32,10 @@ export default {
     'move': (client, move) => {
       board.move(move.piece, move.position)
       view.draw(client.getCanvas(), board.getBoard(), boardSize)
+    },
+    [Events.END_STAGE] (client) {
+      client.getChat().append('Resetting game')
+      board.resetBoard()
     }
   },
 

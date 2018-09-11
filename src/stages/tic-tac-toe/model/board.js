@@ -1,16 +1,15 @@
 function createBoard () {
-  let boardState = [
-    null, null, null,
-    null, null, null,
-    null, null, null
-  ]
-  let turnCount = 0
-  let gameover = false
+  let boardState
+  let turnCount
+  let gameover
+  resetBoard()
 
   // position is from 0 to 8, 0-1-2 is first row, 3-4-5 is second row osv
   function move (piece, position) {
     boardState[position] = piece
     turnCount++
+
+    console.log(boardState)
 
     if (winnerFound(piece)) return 'won'
     if (isDraw()) return 'draw'
@@ -28,7 +27,7 @@ function createBoard () {
     // check horizontal
     for (let y = 0; y < 3; y++) if (checkHorizontal(piece, y)) gameover = true
     for (let x = 0; x < 3; x++) if (checkVertical(piece, x)) gameover = true
-    if (checkCrosses()) gameover = true
+    if (checkCrosses(piece)) gameover = true
     return gameover
   }
 
@@ -65,6 +64,15 @@ function createBoard () {
     return boardState
   }
 
+  function resetBoard () {
+    setBoard([
+      null, null, null,
+      null, null, null,
+      null, null, null
+    ], 0)
+    gameover = false
+  }
+
   function setBoard (newBoardState, newTurnCount) {
     boardState = newBoardState
     turnCount = newTurnCount
@@ -74,6 +82,7 @@ function createBoard () {
     move,
     isMoveLegal,
     getBoard,
+    resetBoard,
     setBoard
   }
 }
