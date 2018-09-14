@@ -49,6 +49,6 @@ const monsterr = createServer({
 monsterr.run()
 
 for (let i = 0; i < numberOfBots; i++) {
-  console.log('spawning bot #' + i)
-  spawn('node', ['./src/bots/random_ash.js'])
+  // console.log('spawning bot #' + i)
+  // TODO spawn('node', ['./src/bots/perfect_ash.js'])
 }
