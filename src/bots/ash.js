@@ -45,7 +45,6 @@ function handleEvent (event) {
         let myMove = calculateBestMove(boardState, me)
         console.log('found a brilliant move: ' + myMove)
         move(boardState, myMove, me)
-        console.log('boardstate: ' + boardState)
         sendMoveToServer(myMove)
       } else {
         console.log('no more moves left, it was a draw')
@@ -60,23 +59,24 @@ let checkSeq = (board, piece, p0, p1, p2) => {
   if (board[p0] === null && board[p1] === piece && board[p2] === piece) return p0
   if (board[p0] === piece && board[p1] === null && board[p2] === piece) return p1
   if (board[p0] === piece && board[p1] === piece && board[p2] === null) return p2
+  return -1 // if nothing is found
 }
 
 let calculateBestMove = (board, me) => {
   // check possible wins
-  for (let x = 0; x < 3; x++) { let position = checkSeq(board, me, x * 3, x * 3 + 1, x * 3 + 2); if (position) return position }
-  for (let y = 0; y < 3; y++) { let position = checkSeq(board, me, y, y + 3, y + 6); if (position) return position }
-  let position1 = checkSeq(board, me, 0, 4, 8); if (position1) return position1
-  let position2 = checkSeq(board, me, 2, 4, 6); if (position2) return position2
+  for (let x = 0; x < 3; x++) { let position = checkSeq(board, me, x * 3, x * 3 + 1, x * 3 + 2); if (position >= 0) return position }
+  for (let y = 0; y < 3; y++) { let position = checkSeq(board, me, y, y + 3, y + 6); if (position >= 0) return position }
+  let position1 = checkSeq(board, me, 0, 4, 8); if (position1 >= 0) return position1
+  let position2 = checkSeq(board, me, 2, 4, 6); if (position2 >= 0) return position2
 
   // else block enemy wins
   let enemy = me === 'X' ? 'O' : 'X'
-  for (let x = 0; x < 3; x++) { let position = checkSeq(board, enemy, x * 3, x * 3 + 1, x * 3 + 2); if (position) return position }
-  for (let y = 0; y < 3; y++) { let position = checkSeq(board, enemy, y, y + 3, y + 6); if (position) return position }
-  let position3 = checkSeq(board, enemy, 0, 4, 8); if (position3) return position3
-  let position4 = checkSeq(board, enemy, 2, 4, 6); if (position4) return position4
+  for (let x = 0; x < 3; x++) { let position = checkSeq(board, enemy, x * 3, x * 3 + 1, x * 3 + 2); if (position >= 0) return position }
+  for (let y = 0; y < 3; y++) { let position = checkSeq(board, enemy, y, y + 3, y + 6); if (position >= 0) return position }
+  let position3 = checkSeq(board, enemy, 0, 4, 8); if (position3 >= 0) return position3
+  let position4 = checkSeq(board, enemy, 2, 4, 6); if (position4 >= 0) return position4
 
-  // TODO special cases, like make dual lines
+  // NOTE special cases are not done, like make dual lines
 
   // if nothing else, make a random move
   console.log('no other move, making something up')
@@ -96,12 +96,3 @@ let sendMoveToServer = (position) => {
 let move = (board, position, piece) => {
   board[position] = piece
 }
-/*
-console.log('checkSeq> ' + checkSeq([null, 'X', 'X', 'O', 'O', null, null, null, null], 'X', 0, 1, 2))
-console.log('checkSeq> ' + checkSeq(['X', null, 'X', 'O', 'O', null, null, null, null], 'X', 0, 1, 2))
-console.log('checkSeq> ' + checkSeq(['X', 'X', null, 'O', 'O', null, null, null, null], 'X', 0, 1, 2))
-
-console.log('checkSeq>O ' + checkSeq([null, null, 'X', 'O', 'O', null, null, 'X', null], 'O', 3, 4, 5))
-console.log('calculateBestMove> ' + calculateBestMove([null, 'X', 'X', 'O', 'O', null, null, null, null], 'X'))
-console.log('calculateBestMove> ' + calculateBestMove([null, null, 'X', 'O', 'O', null, null, 'X', null], 'X'))
-*/

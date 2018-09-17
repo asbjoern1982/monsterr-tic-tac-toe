@@ -35,10 +35,5 @@ $('#admin-button-reset').mouseup(e => {
   admin.sendCommand('reset')
 })
 
-$('#admin-button-add-bot').mouseup(e => {
-  e.preventDefault()
-  admin.sendCommand('spawnBot')
-})
-
 NetworkModule.setupClient(admin)
 LatencyModule.setupClient(admin)

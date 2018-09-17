@@ -22,14 +22,7 @@ let events = {
     }
   }
 }
-let commands = {
-  'spawnBot': (server, clientId) => {
-    /* if (clientId === undefined) { // only AdminClient
-      console.log('spawning bot')
-      spawn('node', ['./src/bots/random_ash.js'])
-    } */
-  }
-}
+let commands = {}
 
 let network = Network.clique(expentedNumberOfClients)
 NetworkModule.addServerCommands(commands, network)
@@ -49,6 +42,6 @@ const monsterr = createServer({
 monsterr.run()
 
 for (let i = 0; i < numberOfBots; i++) {
-  // console.log('spawning bot #' + i)
-  // TODO spawn('node', ['./src/bots/perfect_ash.js'])
+  console.log('spawning bot #' + i)
+  spawn('node', ['./src/bots/ash.js'])
 }

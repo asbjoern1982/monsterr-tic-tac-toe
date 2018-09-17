@@ -9,17 +9,17 @@ socket.on('disconnect', () => {
 socket.on('error', err => console.log(err))
 socket.on('event', handleEvent)
 
-let boardState = [
-  null, null, null,
-  null, null, null,
-  null, null, null
-]
+let boardState
 
 let piece
 function handleEvent (event) {
   console.log('event', event)
   if (event.type === '@monsterr/START_STAGE') { // setup
-    // TODO init board
+    boardState = [
+      null, null, null,
+      null, null, null,
+      null, null, null
+    ]
     socket.emit('event', { type: 'clientReady', payload: 'bot' })
   } else if (event.type === 'youAre') {
     piece = event.payload
@@ -49,21 +49,5 @@ function handleEvent (event) {
         console.log('gameover!')
       }
     }
-  } else if (event.type === '@monsterr/END_STAGE') {
-    boardState = [
-      null, null, null,
-      null, null, null,
-      null, null, null
-    ]
   }
 }
-
-/**
- * Send events to server
- * Must have format
- * {
- *  type: string,
- *  payload: any
- * }
- */
-// socket.emit('event', { type: 'my_event', payload: 'data' })
